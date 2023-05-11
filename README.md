@@ -1,3 +1,3 @@
 # HospitalPlus-FrontEnd
  Flutter HospitalPlus FrontEnd
-![](hastaekranı/login.png){ width=50% height=50% }
+![Login](hastaekranı/login.png){width=30% height=30% }
