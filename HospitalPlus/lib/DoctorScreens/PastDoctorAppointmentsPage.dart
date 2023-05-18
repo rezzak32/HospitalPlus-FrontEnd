@@ -1,18 +1,16 @@
 import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hasta_takip/Api/apiservice.dart';
-import 'package:hasta_takip/DoctorScreens/PastDoctorAppointmentsPage.dart';
 import 'package:hasta_takip/Models/UserModel.dart';
 import 'package:intl/intl.dart';
 
-class DoctorAppointmentsPage extends StatelessWidget {
+class PastDoctorAppointments extends StatelessWidget {
   final int doctorId;
+  const PastDoctorAppointments({super.key, required this.doctorId});
 
-  const DoctorAppointmentsPage({Key? key, required this.doctorId})
-      : super(key: key);
-
-  @override
+   @override
   Widget build(BuildContext context) {
     //final _controller = Get.put(LoginController());
     final dateFormat = DateFormat('dd MMM yyyy');
@@ -23,7 +21,7 @@ class DoctorAppointmentsPage extends StatelessWidget {
         body: Column(
           children: [
             SizedBox(height: 10),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Row(mainAxisAlignment: MainAxisAlignment.start, children: [
               IconButton(
                   onPressed: () {
                     Get.back();
@@ -32,25 +30,20 @@ class DoctorAppointmentsPage extends StatelessWidget {
                     Icons.arrow_back_ios_new,
                     size: 28,
                   )),
-             
+             SizedBox(width: 60),
               Text(
-                "Randevu Takvimi",
+                "Geçmiş Randevular",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               
-              IconButton(
-            icon: Icon(Icons.history,size: 28,),
-            onPressed: () {
-              Get.to(PastDoctorAppointments(doctorId: doctorId));
-            },
-          ),
+              
             ]),
             Expanded(
               child: FutureBuilder<List<Appointment>>(
                 future: APIService.getAppointmentByDoctorId(doctorId),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    final appointments = snapshot.data!.where((appointment) => appointment.appointmentDate!.isAfter(DateTime.now())).toList();
+                    final appointments = snapshot.data!.where((appointment) => appointment.appointmentDate!.isBefore(DateTime.now())).toList();
                     if (appointments.isEmpty) {
                       return Center(
                         child: Text('Randevu Bulunamadı'),
@@ -92,7 +85,7 @@ class DoctorAppointmentsPage extends StatelessWidget {
                               ' ' +
                               appointment.patient!.lastName!),
                           subtitle: Text(dateFormat.format(appointment.appointmentDate!)+ "-" +timeFormat.format(appointment.appointmentDate!)),
-                          
+                         
                         );
                       },
                     );

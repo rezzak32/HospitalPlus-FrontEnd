@@ -70,7 +70,7 @@ class DoctorHomePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Randevu Takvimi",
+                      "Yaklaşan Randevular",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
@@ -104,7 +104,7 @@ class DoctorHomePage extends StatelessWidget {
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else {
-                      final appointments = snapshot.data ?? [];
+                      final appointments = snapshot.data!.where((appointment) => appointment.appointmentDate!.isAfter(DateTime.now())).toList();
                       return ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: appointments.length,

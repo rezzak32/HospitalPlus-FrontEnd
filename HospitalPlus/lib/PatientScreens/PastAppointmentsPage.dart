@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hasta_takip/Api/apiservice.dart';
+
 import 'package:hasta_takip/Models/UserModel.dart';
 import 'package:intl/intl.dart';
 
-import 'PastAppointmentsPage.dart';
-
-class PatientAppointments extends StatelessWidget {
+class PastAppointments extends StatelessWidget {
   final int patientId;
 
-  const PatientAppointments({Key? key, required this.patientId})
-      : super(key: key);
+  const PastAppointments({Key? key, required this.patientId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    //final _controller = Get.put(LoginController());
     final dateFormat = DateFormat('dd MMM yyyy');
     final timeFormat = DateFormat('HH:mm');
     return SafeArea(
@@ -23,7 +20,7 @@ class PatientAppointments extends StatelessWidget {
         body: Column(
           children: [
             SizedBox(height: 10),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Row(mainAxisAlignment: MainAxisAlignment.start, children: [
               IconButton(
                   onPressed: () {
                     Get.back();
@@ -32,25 +29,22 @@ class PatientAppointments extends StatelessWidget {
                     Icons.arrow_back_ios_new,
                     size: 28,
                   )),
-              
+              SizedBox(
+                width: 45,
+              ),
               Text(
-                "Gelecek Randevularım",
+                "Geçmiş Randevularım",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
-              IconButton(
-            icon: Icon(Icons.history,size: 28,),
-            onPressed: () {
-              Get.to(PastAppointments(patientId: patientId));
-            },
-          ),
             ]),
-            
             Expanded(
               child: FutureBuilder<List<Appointment>>(
                 future: APIService.getAppointmentByPatientId(patientId),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    final appointments = snapshot.data!.where((appointment) => appointment.appointmentDate!.isAfter(DateTime.now())).toList();
+                    final appointments = snapshot.data!.where((appointment) => appointment.appointmentDate!.isBefore(DateTime.now())).toList();
+                    
+                    appointments.sort((a, b) => b.appointmentDate!.compareTo(a.appointmentDate!)); // sort by appointment date
                     if (appointments.isEmpty) {
                       return Center(
                         child: Text('Randevu Bulunamadı'),
@@ -59,13 +53,7 @@ class PatientAppointments extends StatelessWidget {
                     return ListView.builder(
                       itemCount: appointments.length,
                       itemBuilder: (context, index) {
-                        appointments.sort((a, b) =>
-                            a.appointmentDate!.compareTo(b.appointmentDate!));
                         final appointment = appointments[index];
-                        // final now = DateTime.now();
-                        // final isCompleted =
-                        //     appointment.appointmentDate!.isBefore(now);
-                        // final status = isCompleted ? 'Tamamlandı' : '';
                         return ListTile(
                           title: Text("Dr. " +
                               appointment.doctor!.firstName! +
@@ -75,7 +63,7 @@ class PatientAppointments extends StatelessWidget {
                                   .format(appointment.appointmentDate!) +
                               "-" +
                               timeFormat.format(appointment.appointmentDate!)),
-                          // trailing: Text(status),
+                          trailing: Text('Tamamlandı'),
                         );
                       },
                     );
@@ -96,4 +84,4 @@ class PatientAppointments extends StatelessWidget {
       ),
     );
   }
-  }
+}
