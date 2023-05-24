@@ -1,4 +1,5 @@
 # HospitalPlus-FrontEnd
+# State Management - GetX
 
 # Patient Screens
 <p align="center">
